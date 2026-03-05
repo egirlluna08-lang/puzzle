@@ -90,6 +90,10 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none;
             user-select: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: opacity;
+            background-color: transparent;
         }
 
         .tile:hover:not(.empty) {
@@ -291,6 +295,14 @@
         let seconds = 0;
         let timerInterval = null;
         let isWon = false;
+        let imageLoaded = false;
+
+        // Preload image
+        const img = new Image();
+        img.onload = function() {
+            imageLoaded = true;
+        };
+        img.src = 'puzzle.jpg';
 
         function init() {
             tiles = Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => i);
