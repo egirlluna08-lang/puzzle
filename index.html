@@ -383,6 +383,34 @@
                 `Time: ${mins}:${secs.toString().padStart(2, '0')} | Moves: ${moves}`;
             document.getElementById('winMessage').classList.add('show');
             document.getElementById('overlay').classList.add('show');
+
+            // Submit to leaderboard
+            submitToLeaderboard('succucharm', moves, seconds);
+        }
+
+        async function submitToLeaderboard(puzzle, moves, time) {
+            try {
+                const playerName = prompt('What\'s your name? (or leave blank for Anonymous)') || 'Anonymous';
+                
+                const response = await fetch('https://puzzle-leaderboard.up.railway.app/api/leaderboard/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        puzzle: puzzle,
+                        playerName: playerName,
+                        time: time,
+                        moves: moves
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    console.log('✓ Score submitted to leaderboard!');
+                }
+            } catch (err) {
+                console.error('Error submitting to leaderboard:', err);
+                // Don't disrupt gameplay if submission fails
+            }
         }
 
         function startTimer() {
