@@ -87,14 +87,17 @@
             display: block;
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .tile:hover:not(.empty) {
-            filter: brightness(1.05);
+            opacity: 0.95;
         }
 
         .tile:active:not(.empty) {
-            filter: brightness(0.98);
+            opacity: 0.9;
         }
 
         .tile:focus {
