@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastel Puzzle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #B4E7FF 0%, #FFF9C4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #5B9BD5;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(255, 185, 0, 0.3);
+        }
+
+        .subtitle {
+            color: #FFB900;
+            font-size: 14px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: linear-gradient(135deg, #B4E7FF, #FFF9C4);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tile {
+            width: 100%;
+            aspect-ratio: 1;
+            background-size: 300px 300px;
+            background-position: 0 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            font-size: 0;
+            overflow: hidden;
+        }
+
+        .tile:hover:not(.empty) {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .tile:active:not(.empty) {
+            transform: scale(0.98);
+        }
+
+        .tile.empty {
+            background: linear-gradient(135deg, #B4E7FF, #FFF9C4);
+            cursor: default;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .shuffle-btn {
+            background: linear-gradient(135deg, #5B9BD5, #4A7FB8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(91, 155, 213, 0.3);
+        }
+
+        .shuffle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(91, 155, 213, 0.4);
+        }
+
+        .shuffle-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #FFB900, #FF9800);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 185, 0, 0.3);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 185, 0, 0.4);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(91, 155, 213, 0.1);
+            border-radius: 8px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #5B9BD5;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            color: #FFB900;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .win-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .win-message.show {
+            display: block;
+            animation: popIn 0.4s ease;
+        }
+
+        .win-message h2 {
+            color: #5B9BD5;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .win-message p {
+            color: #FFB900;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            button {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="container">
+        <h1>🧩 Pastel Puzzle</h1>
+        <p class="subtitle">Solve the sliding puzzle</p>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Moves</div>
+                <div class="stat-value" id="moveCount">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Time</div>
+                <div class="stat-value" id="timeCount">0:00</div>
+            </div>
+        </div>
+
+        <div class="puzzle-container" id="puzzleContainer"></div>
+
+        <div class="controls">
+            <button class="shuffle-btn" onclick="shuffle()">Shuffle</button>
+            <button class="reset-btn" onclick="reset()">Reset</button>
+        </div>
+    </div>
+
+    <div class="win-message" id="winMessage">
+        <h2>🎉 You Won!</h2>
+        <p id="finalMoves">Moves: 0 | Time: 0:00</p>
+    </div>
+
+    <script>
+        const GRID_SIZE = 3;
+        const TILE_SIZE = 100;
+        let tiles = [];
+        let moves = 0;
+        let seconds = 0;
+        let timerInterval = null;
+        let isWon = false;
+
+        // Initialize puzzle
+        function init() {
+            tiles = Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => i);
+            moves = 0;
+            seconds = 0;
+            isWon = false;
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('timeCount').textContent = '0:00';
+            document.getElementById('winMessage').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+            renderPuzzle();
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function renderPuzzle() {
+            const container = document.getElementById('puzzleContainer');
+            container.innerHTML = '';
+
+            tiles.forEach((tileNumber, index) => {
+                const tile = document.createElement('button');
+                tile.className = tileNumber === 0 ? 'tile empty' : 'tile';
+                
+                if (tileNumber !== 0) {
+                    const col = tileNumber % GRID_SIZE;
+                    const row = Math.floor(tileNumber / GRID_SIZE);
+                    tile.style.backgroundPosition = `${-col * TILE_SIZE}px ${-row * TILE_SIZE}px`;
+                }
+                
+                tile.onclick = () => moveTile(index);
+                container.appendChild(tile);
+            });
+
+            updateTileImages();
+        }
+
+        function updateTileImages() {
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach((tileEl, index) => {
+                if (!tileEl.classList.contains('empty')) {
+                    tileEl.style.backgroundImage = 'url(puzzle.jpg)';
+                }
+            });
+        }
+
+        function getEmptyIndex() {
+            return tiles.indexOf(0);
+        }
+
+        function canMove(index) {
+            const emptyIndex = getEmptyIndex();
+            const emptyRow = Math.floor(emptyIndex / GRID_SIZE);
+            const emptyCol = emptyIndex % GRID_SIZE;
+            const tileRow = Math.floor(index / GRID_SIZE);
+            const tileCol = index % GRID_SIZE;
+
+            return (
+                (emptyRow === tileRow && Math.abs(emptyCol - tileCol) === 1) ||
+                (emptyCol === tileCol && Math.abs(emptyRow - tileRow) === 1)
+            );
+        }
+
+        function moveTile(index) {
+            if (isWon || !canMove(index)) return;
+
+            if (moves === 0) startTimer();
+
+            const emptyIndex = getEmptyIndex();
+            [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
+            moves++;
+            document.getElementById('moveCount').textContent = moves;
+            renderPuzzle();
+            checkWin();
+        }
+
+        function checkWin() {
+            const isWinState = tiles.every((tile, index) => tile === index);
+            if (isWinState) {
+                isWon = true;
+                stopTimer();
+                showWinMessage();
+            }
+        }
+
+        function showWinMessage() {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('finalMoves').textContent = 
+                `Moves: ${moves} | Time: ${mins}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('winMessage').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timeCount').textContent = 
+                    `${mins}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function shuffle() {
+            stopTimer();
+            // Fisher-Yates shuffle
+            let array = [...tiles];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            tiles = array;
+            moves = 0;
+            seconds = 0;
+            isWon = false;
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('timeCount').textContent = '0:00';
+            document.getElementById('winMessage').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+            renderPuzzle();
+        }
+
+        function reset() {
+            stopTimer();
+            init();
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
