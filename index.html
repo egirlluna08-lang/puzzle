@@ -70,7 +70,7 @@
         .tile {
             width: 100%;
             aspect-ratio: 1;
-            background-size: 300px 300px;
+            background-size: 300% 300%;
             background-position: 0 0;
             border: none;
             outline: none;
@@ -313,7 +313,7 @@
                 if (tileNumber !== 0) {
                     const col = tileNumber % GRID_SIZE;
                     const row = Math.floor(tileNumber / GRID_SIZE);
-                    tile.style.backgroundPosition = `${-col * TILE_SIZE}px ${-row * TILE_SIZE}px`;
+                    tile.style.backgroundPosition = `${col * 50}% ${row * 50}%`;
                     tile.style.backgroundImage = 'url(puzzle.jpg)';
                 }
                 
