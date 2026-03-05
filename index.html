@@ -277,7 +277,7 @@
 
     <div class="win-message" id="winMessage">
         <h2>Congrats subby~! come dm me, maybe if you're cute~ or smart~ or rich~ I'll play with you &lt;3</h2>
-        <p id="finalMoves">Moves: 0 | Time: 0:00</p>
+        <p id="finalStats" style="font-size: 16px; margin-top: 12px;">Time: 0:00 | Moves: 0</p>
     </div>
 
     <script>
@@ -364,8 +364,8 @@
         function showWinMessage() {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
-            document.getElementById('finalMoves').textContent = 
-                `Moves: ${moves} | Time: ${mins}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('finalStats').textContent = 
+                `Time: ${mins}:${secs.toString().padStart(2, '0')} | Moves: ${moves}`;
             document.getElementById('winMessage').classList.add('show');
             document.getElementById('overlay').classList.add('show');
         }
